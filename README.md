@@ -1,16 +1,18 @@
 # yusuph_abdallah_dhis2_practical_interview
 
-A new Flutter project.
+## Answers distribution and branches
 
-## Getting Started
+#### Branch QN-3 is for for Question number 3 
+#### Branch QN-4 is for for Question number 4
+#### Main branch consist codes for Question 5(b).
 
-This project is a starting point for a Flutter application.
+## How to run app
+### For Question 5(b)
+#### You need to have flutter SDK installed and added to path
+#### You need to have Android sdk installed
+#### You need to have Android studio or Vs code
+#### To run app use `flutter run` command
 
-A few resources to get you started if this is your first Flutter project:
+### For Question 3 and 4
+#### please find the QN-3.dart and QN-4.dart files under the root folder in the respective branches.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

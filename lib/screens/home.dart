@@ -14,19 +14,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final Map<String, TextEditingController> inputControllers = {};
   final Map<String, double> dataPercentages = {};
-  List<Dhis2DataElement> allDataElements = [];
 
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () async {
-      allDataElements = await DataElementsService.fetchDataElements();
-      for (var item in allDataElements) {
-        inputControllers[item.dataElementName] = TextEditingController();
-        dataPercentages[item.dataElementName] = 0.0;
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -35,61 +23,84 @@ class _HomeState extends State<Home> {
     });
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('DHIS2 Practical Interview'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE5EEFF),
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-                ),
-                child: const Text(
-                  "Note: Scroll the table horizontally\nto view all data elements. 'Value' fields are\ninputs field that you can enter data and\nthe percentage will be calculated\nautomatically",
-                ),
-              ),
-              const SizedBox(height: 24),
-              Container(
-                color: const Color(0xFFE5EEFF).withOpacity(0.4),
-                child: DataTable(
-                  showBottomBorder: true,
-                  border: TableBorder.all(color: Colors.black),
-                  columns: const [
-                    DataColumn(label: Text('Data Element Name')),
-                    DataColumn(label: Text('Value')),
-                    DataColumn(label: Text('Percentage = \n(Value / 40) * 100')),
-                  ],
-                  rows: allDataElements.map((item) {
-                    String name = item.dataElementName;
-                    return DataRow(cells: [
-                      DataCell(Text(name)),
-                      DataCell(
-                        TextField(
-                          controller: inputControllers[name],
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) => _updatePercentage(name, value),
+        appBar: AppBar(
+          title: const Text('DHIS2 Practical Interview'),
+        ),
+        body: FutureBuilder<List<Dhis2DataElement>>(
+          future: DataElementsService.fetchDataElements(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No data available'));
+            } else {
+              List<Dhis2DataElement> data = snapshot.data!;
+              for (var item in data) {
+                inputControllers[item.dataElementName] =
+                    TextEditingController();
+                dataPercentages[item.dataElementName] = 0.0;
+              }
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                            color: Color(0xFFE5EEFF),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: const Text(
+                          "Note: Scroll the table horizontally\nto view all data elements. 'Value' fields are\ninputs field that you can enter data and\nthe percentage will be calculated\nautomatically",
                         ),
                       ),
-                      DataCell(Text('${dataPercentages[name]?.toStringAsFixed(2)}%')),
-                    ]);
-                  }).toList(),
+                      const SizedBox(height: 24),
+                      Container(
+                        color: const Color(0xFFE5EEFF).withOpacity(0.4),
+                        child: DataTable(
+                          showBottomBorder: true,
+                          border: TableBorder.all(color: Colors.black),
+                          columns: const [
+                            DataColumn(label: Text('Data Element Name')),
+                            DataColumn(label: Text('Value')),
+                            DataColumn(
+                                label:
+                                    Text('Percentage = \n(Value / 40) * 100')),
+                          ],
+                          rows: data.map((item) {
+                            String name = item.dataElementName;
+                            return DataRow(cells: [
+                              DataCell(Text(name)),
+                              DataCell(
+                                TextField(
+                                  controller: inputControllers[name],
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) =>
+                                      _updatePercentage(name, value),
+                                ),
+                              ),
+                              DataCell(Text(
+                                  '${dataPercentages[name]?.toStringAsFixed(2)}%')),
+                            ]);
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+              );
+            }
+          },
+        ));
   }
 
   void _updatePercentage(String name, String value) {

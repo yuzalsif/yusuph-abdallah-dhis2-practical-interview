@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:yusuph_abdallah_dhis2_practical_interview/models/data_element.dart';
 
-class DataaElementsService {
+class DataElementsService {
 
-  Future<List<DataElement>> fetchDataElements() async {
+ static Future<List<Dhis2DataElement>> fetchDataElements() async {
     var headersList = {
       'Accept': '*/*',
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
@@ -20,11 +20,11 @@ class DataaElementsService {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      final List<DataElement> dataElements = [];
+      final List<Dhis2DataElement> dataElements = [];
       print(resBody);
       final results = jsonDecode(resBody);
       for (var dataElement in results["dataElements"]) {
-        dataElements.add(DataElement(
+        dataElements.add(Dhis2DataElement(
           id: dataElement['id'],
           dataElementName: dataElement['name'],
         ));

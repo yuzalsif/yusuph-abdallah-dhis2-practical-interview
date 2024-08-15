@@ -1,8 +1,8 @@
-class DataElement {
+class Dhis2DataElement {
   final String id;
   final String dataElementName;
 
-  const DataElement({
+  const Dhis2DataElement({
     required this.dataElementName,
     required this.id,
   });

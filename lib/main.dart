@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yusuph_abdallah_dhis2_practical_interview/screens/home.dart';
 
   void main() {
     runApp(const MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'DHIS2 Practical Interview'),
+      home: const Home(),
     );
   }
 }
